@@ -30,16 +30,16 @@ internal class SecurityConfig(private val keycloakLogoutHandler: KeycloakLogoutH
   @Throws(Exception::class)
   fun clientFilterChain(http: HttpSecurity): SecurityFilterChain {
     http
-      .authorizeHttpRequests {
-        it
+      .authorizeHttpRequests { authorizeHttpRequests ->
+        authorizeHttpRequests
           .requestMatchers(AntPathRequestMatcher("/"))
           .permitAll()  // Allow any requests for home page
           .anyRequest() // For all other requests
           .authenticated()  // Require auth
       }
       .oauth2Login {}
-      .logout {
-        it
+      .logout { logout ->
+        logout
           .addLogoutHandler(keycloakLogoutHandler)
           .logoutSuccessUrl("/")
       }
@@ -52,8 +52,8 @@ internal class SecurityConfig(private val keycloakLogoutHandler: KeycloakLogoutH
   @Throws(Exception::class)
   fun resourceServerFilterChain(http: HttpSecurity): SecurityFilterChain {
     http
-      .authorizeHttpRequests {
-        it
+      .authorizeHttpRequests { authorizeHttpRequests ->
+        authorizeHttpRequests
           .requestMatchers(AntPathRequestMatcher("/customers*"))
           .hasRole("USER")
           .anyRequest()
