@@ -7,12 +7,12 @@ import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
 import java.security.Principal
 
-@Controller
+@Controller("/")
 class CustomerController(
     private val customerDAO: CustomerDAO
 ) {
 
-    @GetMapping(path = ["/"])
+    @GetMapping(path = ["/external"])
     fun index(): String {
         return "external"
     }

@@ -19,12 +19,13 @@ repositories {
 }
 
 dependencies {
-    // Sp ring boot
+    // Spring boot
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")  // H2 Database
+    implementation("org.springframework.boot:spring-boot-starter-thymeleaf") // Templating and better view resolving avoiding circular view reference error when path and view share a name
 
     // DB
     implementation("com.h2database:h2")
