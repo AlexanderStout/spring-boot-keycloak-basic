@@ -19,55 +19,63 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher
 @Configuration
 @EnableWebSecurity
 internal class SecurityConfig(keycloakLogoutHandler: KeycloakLogoutHandler) {
-    private val keycloakLogoutHandler: KeycloakLogoutHandler
+  private val keycloakLogoutHandler: KeycloakLogoutHandler
 
-    init {
-        this.keycloakLogoutHandler = keycloakLogoutHandler
+  init {
+    this.keycloakLogoutHandler = keycloakLogoutHandler
+  }
+
+  @Bean
+  protected fun sessionAuthenticationStrategy(): SessionAuthenticationStrategy {
+    return RegisterSessionAuthenticationStrategy(SessionRegistryImpl())
+  }
+
+  @Order(1)
+  @Bean
+  @Throws(Exception::class)
+  fun clientFilterChain(http: HttpSecurity): SecurityFilterChain {
+    http
+      .authorizeHttpRequests {
+        it
+          .requestMatchers(AntPathRequestMatcher("/"))
+          .permitAll()  // Allow any requests for home page
+          .anyRequest() // For all other requests
+          .authenticated()  // Require auth
+      }
+      .oauth2Login {}
+      .logout {
+        it
+          .addLogoutHandler(keycloakLogoutHandler)
+          .logoutSuccessUrl("/")
+      }
+
+    return http.build()
+  }
+
+  @Order(2)
+  @Bean
+  @Throws(Exception::class)
+  fun resourceServerFilterChain(http: HttpSecurity): SecurityFilterChain {
+    http
+      .authorizeHttpRequests {
+        it
+          .requestMatchers(AntPathRequestMatcher("/customers*"))
+          .hasRole("USER")
+          .anyRequest()
+          .authenticated()
+      }
+
+    http.oauth2ResourceServer { oauth2: OAuth2ResourceServerConfigurer<HttpSecurity?> ->
+      oauth2.jwt(Customizer.withDefaults())
     }
 
-    @Bean
-    protected fun sessionAuthenticationStrategy(): SessionAuthenticationStrategy {
-        return RegisterSessionAuthenticationStrategy(SessionRegistryImpl())
-    }
+    return http.build()
+  }
 
-    @Order(1)
-    @Bean
-    @Throws(Exception::class)
-    fun clientFilterChain(http: HttpSecurity): SecurityFilterChain {
-        http.authorizeRequests()
-            .requestMatchers(AntPathRequestMatcher("/"))
-            .permitAll()
-            .anyRequest()
-            .authenticated()
-        http.oauth2Login()
-            .and()
-            .logout()
-            .addLogoutHandler(keycloakLogoutHandler)
-            .logoutSuccessUrl("/")
-        return http.build()
-    }
-
-    @Order(2)
-    @Bean
-    @Throws(Exception::class)
-    fun resourceServerFilterChain(http: HttpSecurity): SecurityFilterChain {
-        http.authorizeRequests()
-            .requestMatchers(AntPathRequestMatcher("/customers*"))
-            .hasRole("USER")
-            .anyRequest()
-            .authenticated()
-        http.oauth2ResourceServer { oauth2: OAuth2ResourceServerConfigurer<HttpSecurity?> ->
-            oauth2.jwt(
-                Customizer.withDefaults()
-            )
-        }
-        return http.build()
-    }
-
-    @Bean
-    @Throws(Exception::class)
-    fun authenticationManager(http: HttpSecurity): AuthenticationManager {
-        return http.getSharedObject(AuthenticationManagerBuilder::class.java)
-            .build()
-    }
+  @Bean
+  @Throws(Exception::class)
+  fun authenticationManager(http: HttpSecurity): AuthenticationManager {
+    return http.getSharedObject(AuthenticationManagerBuilder::class.java)
+      .build()
+  }
 }
