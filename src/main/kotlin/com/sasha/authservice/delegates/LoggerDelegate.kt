@@ -1,6 +1,5 @@
 package com.sasha.authservice.delegates
 
-import com.sasha.authservice.extensions.Logging
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import kotlin.properties.ReadOnlyProperty
@@ -12,7 +11,7 @@ class LoggerDelegate<in R : Any> : ReadOnlyProperty<R, Logger> {
             = getLogger(getClassForLogging(thisRef.javaClass))
 }
 
-inline fun <T : Any> getClassForLogging(javaClass: Class<T>): Class<*> {
+fun <T : Any> getClassForLogging(javaClass: Class<T>): Class<*> {
     return javaClass.enclosingClass?.takeIf {
         it.kotlin.companionObject?.java == javaClass
     } ?: javaClass

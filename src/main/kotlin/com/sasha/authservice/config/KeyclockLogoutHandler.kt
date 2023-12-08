@@ -3,15 +3,12 @@ package com.sasha.authservice.config
 import com.sasha.authservice.delegates.LoggerDelegate
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import org.slf4j.Logger
 import org.springframework.security.core.Authentication
 import org.springframework.security.oauth2.core.oidc.user.OidcUser
 import org.springframework.security.web.authentication.logout.LogoutHandler
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
-import com.sasha.authservice.extensions.logger
-import org.springframework.context.annotation.Bean
 
 
 @Component
