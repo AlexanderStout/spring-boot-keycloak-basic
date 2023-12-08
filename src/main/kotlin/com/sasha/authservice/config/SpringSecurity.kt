@@ -18,12 +18,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher
 
 @Configuration
 @EnableWebSecurity
-internal class SecurityConfig(keycloakLogoutHandler: KeycloakLogoutHandler) {
-  private val keycloakLogoutHandler: KeycloakLogoutHandler
-
-  init {
-    this.keycloakLogoutHandler = keycloakLogoutHandler
-  }
+internal class SecurityConfig(private val keycloakLogoutHandler: KeycloakLogoutHandler) {
 
   @Bean
   protected fun sessionAuthenticationStrategy(): SessionAuthenticationStrategy {
